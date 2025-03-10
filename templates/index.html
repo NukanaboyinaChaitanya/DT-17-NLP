@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Ranking Sytem</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Ranking System</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <label for="jobDescription">Job Description:</label>
+            <textarea id="jobDescription" rows="4" required></textarea>
+            
+            <label for="resumeFiles">Upload Resumes (PDF only):</label>
+            <input type="file" id="resumeFiles" multiple accept="application/pdf" required>
+            
+            <button type="submit">Upload & Rank</button>
+        </form>
+        
+        <h2>Ranked Resumes</h2>
+        <ul id="rankedResults"></ul>
+    </div>
+    
+    <script>
+        document.getElementById("uploadForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            
+            let formData = new FormData();
+            let files = document.getElementById("resumeFiles").files;
+            for (let i = 0; i < files.length; i++) {
+                formData.append("files", files[i]);
+            }
+            
+            formData.append("job_description", document.getElementById("jobDescription").value);
+            
+            let response = await fetch("http://127.0.0.1:5000/upload", {
+                method: "POST",
+                body: formData
+            });
+            let result = await response.json();
+            
+            let rankedList = document.getElementById("rankedResults");
+            rankedList.innerHTML = "";
+            result.ranked_resumes.forEach(resume => {
+                let li = document.createElement("li");
+                li.textContent = `${resume[0]} - Score: ${resume[1].toFixed(2)}`;
+                rankedList.appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
