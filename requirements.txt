@@ -1,0 +1,6 @@
+streamlit
+pypdf2
+scikit-learn
+sentence-transformers
+torch
+nest-asyncio
